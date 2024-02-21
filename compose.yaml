@@ -1,0 +1,12 @@
+version: "1.0"
+name: userapi
+services:
+  postgres:
+    container_name: psgrs
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: "userapi_db"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "passwd"
+    ports:
+      - "5432:5432"
