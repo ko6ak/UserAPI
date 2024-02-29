@@ -2,6 +2,8 @@ package com.example.userapi.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.Objects;
 
@@ -11,8 +13,10 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Table("users")
 public class User {
     @Schema(example = "1")
+    @Id
     private Long id;
     @Schema(example = "Ivan")
     private String name;

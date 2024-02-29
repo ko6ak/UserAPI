@@ -39,14 +39,14 @@ class UserServiceTests {
 
         Mono<User> monoUser = Mono.just(user);
 
-        when(userRepository.get(1L)).thenReturn(monoUser);
+        when(userRepository.findById(1L)).thenReturn(monoUser);
 
         assertEquals(user, userService.get(1L).block());
     }
 
     @Test
     public void getNotFound() throws Exception {
-        when(userRepository.get(4L)).thenReturn(Mono.empty());
+        when(userRepository.findById(4L)).thenReturn(Mono.empty());
 
         assertEquals(Mono.empty(), userService.get(4L));
     }
@@ -63,7 +63,7 @@ class UserServiceTests {
 
         Mono<User> monoUser = Mono.just(user);
 
-        when(userRepository.create(any(User.class))).thenReturn(monoUser);
+        when(userRepository.save(any(User.class))).thenReturn(monoUser);
 
         assertEquals(user, userService.create(userRequestDTO).block());
     }
@@ -75,7 +75,7 @@ class UserServiceTests {
                 .email("ivan@ya.ru")
                 .build();
 
-        when(userRepository.create(any(User.class))).thenThrow(DuplicateKeyException.class);
+        when(userRepository.save(any(User.class))).thenThrow(DuplicateKeyException.class);
 
         assertThrows(DuplicateKeyException.class, () -> userService.create(userRequestDTO));
     }
@@ -90,11 +90,11 @@ class UserServiceTests {
 
         Mono<User> monoUser = Mono.just(user);
 
-        when(userRepository.get(1L)).thenReturn(monoUser);
-        when(userRepository.update(any(User.class))).thenReturn(monoUser);
+        when(userRepository.findById(1L)).thenReturn(monoUser);
+        when(userRepository.save(any(User.class))).thenReturn(monoUser);
 
         assertEquals(user, userService.update(user).block());
-        verify(userRepository,  times(0)).update(user);
+        verify(userRepository,  times(0)).save(user);
 
         User user_1 = User.builder()
                 .id(1L)
@@ -103,7 +103,7 @@ class UserServiceTests {
                 .build();
 
         assertEquals(user_1, userService.update(user_1).block());
-        verify(userRepository,  times(1)).update(user_1);
+        verify(userRepository,  times(1)).save(user_1);
     }
 
     @Test
@@ -114,22 +114,22 @@ class UserServiceTests {
                 .email("ivan@gmail.com")
                 .build();
 
-        when(userRepository.get(4L)).thenReturn(Mono.empty());
+        when(userRepository.findById(4L)).thenReturn(Mono.empty());
 
         assertNull(userService.update(user).block());
     }
 
     @Test
     public void deleteOk() throws Exception {
-        when(userRepository.get(1L)).thenReturn(Mono.just(new User()));
-        when(userRepository.delete(1L)).thenReturn(Mono.just(true));
+        when(userRepository.findById(1L)).thenReturn(Mono.just(new User()));
+        when(userRepository.deleteById(1L)).thenReturn(Mono.empty());
 
         assertEquals(Boolean.TRUE, userService.delete(1L).block());
     }
 
     @Test
     public void deleteNotFound() throws Exception {
-        when(userRepository.get(4L)).thenReturn(Mono.empty());
+        when(userRepository.findById(4L)).thenReturn(Mono.empty());
 
         assertEquals(Boolean.FALSE, userService.delete(4L).block());
     }
@@ -150,7 +150,7 @@ class UserServiceTests {
 
         List<User> users = List.of(user, user_1);
 
-        when(userRepository.getAll()).thenReturn(Flux.fromIterable(users));
+        when(userRepository.findAll()).thenReturn(Flux.fromIterable(users));
 
         assertEquals(users, userService.getAll().toStream().toList());
     }

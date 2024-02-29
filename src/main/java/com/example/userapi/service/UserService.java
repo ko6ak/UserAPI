@@ -20,32 +20,31 @@ public class UserService {
 
     @Cacheable(value = "users", key = "#id")
     public Mono<User> get(Long id) {
-        return userRepository.get(id);
+        return userRepository.findById(id);
     }
 
     public Mono<User> create(UserRequestDTO userRequestDTO) {
-        return userRepository.create(UserUtils.toUser(userRequestDTO));
+        return userRepository.save(UserUtils.toUser(userRequestDTO));
     }
 
     @CachePut(value = "users", key = "#user.id")
     public Mono<User> update(User user) {
-        return userRepository.get(user.getId())
+        return userRepository.findById(user.getId())
                 .flatMap(dbUser -> {
                     if (dbUser.getName().equals(user.getName()) && dbUser.getEmail().equals(user.getEmail())) return Mono.just(dbUser);
                     dbUser.setName(user.getName());
                     dbUser.setEmail(user.getEmail());
-                    return userRepository.update(dbUser);
+                    return userRepository.save(dbUser);
                 }).switchIfEmpty(Mono.defer(Mono::empty));
     }
 
     @CacheEvict(value = "users", key = "#id")
     public Mono<Boolean> delete(Long id) {
-        return userRepository.get(id).flatMap(u -> userRepository.delete(id)).switchIfEmpty(Mono.just(false));
+        return userRepository.findById(id).flatMap(u -> userRepository.deleteById(id).then(Mono.just(Boolean.TRUE))).switchIfEmpty(Mono.just(Boolean.FALSE));
 
     }
 
-    @Cacheable("users")
     public Flux<User> getAll() {
-        return userRepository.getAll();
+        return userRepository.findAll();
     }
 }
