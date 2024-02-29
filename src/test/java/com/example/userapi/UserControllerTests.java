@@ -5,13 +5,14 @@ import com.example.userapi.entity.User;
 import com.example.userapi.service.UserService;
 import com.example.userapi.util.UserUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,6 +22,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureWebTestClient
 class UserControllerTests {
@@ -96,7 +98,7 @@ class UserControllerTests {
 
     @Test
     public void createNotUniqueEmail() throws Exception {
-        when(userService.create(any(UserRequestDTO.class))).thenThrow(DuplicateKeyException.class);
+        when(userService.create(any(UserRequestDTO.class))).thenThrow(ConstraintViolationException.class);
 
         UserRequestDTO userRequestDTO_1 = UserRequestDTO.builder()
                 .name("Ivanov")

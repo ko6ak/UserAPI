@@ -1,6 +1,7 @@
 package com.example.userapi.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Objects;
@@ -11,8 +12,14 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name="users")
+@NamedQuery(name = "delete", query = "delete from User u where u.id=:id")
 public class User {
     @Schema(example = "1")
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "id")
     private Long id;
     @Schema(example = "Ivan")
     private String name;

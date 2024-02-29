@@ -18,7 +18,6 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    @Cacheable(value = "users", key = "#id")
     public Mono<User> get(Long id) {
         return userRepository.get(id);
     }
@@ -27,7 +26,6 @@ public class UserService {
         return userRepository.create(UserUtils.toUser(userRequestDTO));
     }
 
-    @CachePut(value = "users", key = "#user.id")
     public Mono<User> update(User user) {
         return userRepository.get(user.getId())
                 .flatMap(dbUser -> {
@@ -38,13 +36,11 @@ public class UserService {
                 }).switchIfEmpty(Mono.defer(Mono::empty));
     }
 
-    @CacheEvict(value = "users", key = "#id")
     public Mono<Boolean> delete(Long id) {
         return userRepository.get(id).flatMap(u -> userRepository.delete(id)).switchIfEmpty(Mono.just(false));
 
     }
 
-    @Cacheable("users")
     public Flux<User> getAll() {
         return userRepository.getAll();
     }
