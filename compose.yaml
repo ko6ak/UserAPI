@@ -10,3 +10,12 @@ services:
       POSTGRES_PASSWORD: "passwd"
     ports:
       - "5432:5432"
+  userapi:
+    container_name: userapi
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
